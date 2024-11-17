@@ -14,9 +14,9 @@ public class ChargeCreditCardWorker {
     private final static Logger LOG = LoggerFactory.getLogger(ChargeCreditCardWorker.class);
 
     @JobWorker(type = "charge-credit-card")
-    public Map<String, Double> chargeCreditCard(@Variable(name = "totalWithTax") Double totalWithTax) {
+    public Map<String, Double> chargeCreditCard(@Variable(name = "total") Double total) {
         //20% surcharge for credit card payment
-        double amountCharged = totalWithTax * 1.2;
+        double amountCharged = total * 1.2;
         LOG.info("charging credit card (including surcharge): {}", String.format("%,.2f", amountCharged));
         return Map.of("amountCharged", amountCharged);
     }

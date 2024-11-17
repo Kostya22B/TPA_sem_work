@@ -1,2 +1,0 @@
-https://docs.camunda.io/docs/apis-tools/spring-zeebe-sdk/getting-started/
-https://github.com/camunda/camunda-8-get-started-spring/blob/main/src/main/resources/application.yml

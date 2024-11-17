@@ -9,8 +9,10 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+import java.util.Map;
+
 @SpringBootApplication
-@Deployment(resources = "classpath:myprocessapplication.bpmn")
+@Deployment(resources = "classpath:bondakos_domashka.bpmn")
 public class DemoApplication implements CommandLineRunner {
 
 	private static final Logger LOG = LoggerFactory.getLogger(DemoApplication.class);
@@ -24,12 +26,13 @@ public class DemoApplication implements CommandLineRunner {
 
 	@Override
 	public void run ( final String...args){
-		var bpmnProcessId = "UniversalPaymentProcess";
+		var bpmnProcessId = "Process_1yuyqdx";
 		try {
 
 			var event = zeebeClient.newCreateInstanceCommand()
 					.bpmnProcessId(bpmnProcessId)
 					.latestVersion()
+					.variables(Map.of("total", 100))
 					.send()
 					.join();
 			LOG.info(String.format("started a process: %d", event.getProcessInstanceKey()));
