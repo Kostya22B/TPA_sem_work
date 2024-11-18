@@ -1,0 +1,360 @@
+<?xml version='1.0' encoding='utf-8'?>
+<ns0:definitions xmlns:ns0="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:ns1="http://camunda.org/schema/modeler/1.0" xmlns:ns2="http://camunda.org/schema/zeebe/1.0" xmlns:ns4="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:ns5="http://www.omg.org/spec/DD/20100524/DC" xmlns:ns6="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Web Modeler" exporterVersion="ab92ea9" ns1:executionPlatform="Camunda Cloud" ns1:executionPlatformVersion="8.6.0">
+  <ns0:process id="Process_1puurly" name="LolCheck" isExecutable="true">
+    <ns0:sequenceFlow id="Flow_0s97u3o" sourceRef="StartEvent_1" targetRef="UserTask_InputTotal" />
+    <ns0:startEvent id="StartEvent_1">
+      <ns0:outgoing>Flow_0s97u3o</ns0:outgoing>
+    </ns0:startEvent>
+    <ns0:userTask id="UserTask_InputTotal" name="Input Total">
+      <ns0:extensionElements>
+        <ns2:formDefinition formId="user-do-input-total" />
+      </ns0:extensionElements>
+      <ns0:incoming>Flow_0s97u3o</ns0:incoming>
+      <ns0:outgoing>Flow_0hd0b83</ns0:outgoing>
+    </ns0:userTask>
+    <ns0:sequenceFlow id="Flow_0hd0b83" sourceRef="UserTask_InputTotal" targetRef="ServiceTask_CalculateTax" />
+    <ns0:serviceTask id="ServiceTask_CalculateTax" name="CalculateTax">
+      <ns0:extensionElements>
+        <ns2:taskDefinition type="calculate-tax" />
+        <ns2:ioMapping>
+          <ns2:input source="=total" target="total" />
+          <ns2:output source="=totalWithTax" target="totalWithTax" />
+        </ns2:ioMapping>
+      </ns0:extensionElements>
+      <ns0:incoming>Flow_0hd0b83</ns0:incoming>
+      <ns0:outgoing>Flow_0jwhnof</ns0:outgoing>
+    </ns0:serviceTask>
+    <ns0:sequenceFlow id="Flow_0jwhnof" sourceRef="ServiceTask_CalculateTax" targetRef="Gateway_0d9x8xs" />
+    <ns0:parallelGateway id="Gateway_0d9x8xs">
+      <ns0:incoming>Flow_0jwhnof</ns0:incoming>
+      <ns0:outgoing>Flow_1awff7q</ns0:outgoing>
+      <ns0:outgoing>Flow_15h0o1n</ns0:outgoing>
+    </ns0:parallelGateway>
+    <ns0:sequenceFlow id="Flow_1awff7q" sourceRef="Gateway_0d9x8xs" targetRef="ServiceTask_NotifyUser" />
+    <ns0:serviceTask id="ServiceTask_NotifyUser" name="Notify User About Tax">
+      <ns0:extensionElements>
+        <ns2:taskDefinition type="notify-user" />
+        <ns2:ioMapping>
+          <ns2:input source="=totalWithTax" target="totalWithTax" />
+        </ns2:ioMapping>
+      </ns0:extensionElements>
+      <ns0:incoming>Flow_1awff7q</ns0:incoming>
+      <ns0:outgoing>Flow_1h61yzf</ns0:outgoing>
+    </ns0:serviceTask>
+    <ns0:sequenceFlow id="Flow_15h0o1n" sourceRef="Gateway_0d9x8xs" targetRef="ServiceTask_CheckDiscounts" />
+    <ns0:serviceTask id="ServiceTask_CheckDiscounts" name="Check Discounts">
+      <ns0:extensionElements>
+        <ns2:taskDefinition type="check-discounts" />
+        <ns2:ioMapping>
+          <ns2:input source="=totalWithTax" target="totalWithTax" />
+          <ns2:output source="=discount" target="discount" />
+        </ns2:ioMapping>
+      </ns0:extensionElements>
+      <ns0:incoming>Flow_15h0o1n</ns0:incoming>
+      <ns0:outgoing>Flow_0161e1j</ns0:outgoing>
+    </ns0:serviceTask>
+    <ns0:sequenceFlow id="Flow_0161e1j" sourceRef="ServiceTask_CheckDiscounts" targetRef="Gateway_05whmcg" />
+    <ns0:parallelGateway id="Gateway_05whmcg">
+      <ns0:incoming>Flow_0161e1j</ns0:incoming>
+      <ns0:incoming>Flow_1h61yzf</ns0:incoming>
+      <ns0:outgoing>Flow_0ok4wa1</ns0:outgoing>
+    </ns0:parallelGateway>
+    <ns0:sequenceFlow id="Flow_1h61yzf" sourceRef="ServiceTask_NotifyUser" targetRef="Gateway_05whmcg" />
+    <ns0:eventBasedGateway id="Gateway_EventBased">
+      <ns0:incoming>Flow_0kv1ihn</ns0:incoming>
+      <ns0:outgoing>Flow_13s2exa</ns0:outgoing>
+      <ns0:outgoing>Flow_0edbcah</ns0:outgoing>
+    </ns0:eventBasedGateway>
+    <ns0:intermediateCatchEvent id="CatchEvent_PaymentTimeout" name="Payment Timeout">
+      <ns0:incoming>Flow_13s2exa</ns0:incoming>
+      <ns0:outgoing>Flow_0c0suuw</ns0:outgoing>
+      <ns0:timerEventDefinition id="TimerEventDefinition_0rwrgxc">
+        <ns0:timeDuration xsi:type="bpmn:tFormalExpression">PT10M</ns0:timeDuration>
+      </ns0:timerEventDefinition>
+    </ns0:intermediateCatchEvent>
+    <ns0:sequenceFlow id="Flow_13s2exa" sourceRef="Gateway_EventBased" targetRef="CatchEvent_PaymentTimeout" />
+    <ns0:sequenceFlow id="Flow_0vz569h" sourceRef="CatchEvent_PaymentSuccessful" targetRef="ServiceTask_PaymentSuccess" />
+    <ns0:serviceTask id="ServiceTask_PaymentSuccess" name="Payment Success">
+      <ns0:extensionElements>
+        <ns2:taskDefinition type="payment-success" />
+      </ns0:extensionElements>
+      <ns0:incoming>Flow_0vz569h</ns0:incoming>
+      <ns0:outgoing>Flow_0tkk1b3</ns0:outgoing>
+    </ns0:serviceTask>
+    <ns0:sequenceFlow id="Flow_0c0suuw" sourceRef="CatchEvent_PaymentTimeout" targetRef="ServiceTask_PaymentFailure" />
+    <ns0:serviceTask id="ServiceTask_PaymentFailure" name="Payment Failure">
+      <ns0:extensionElements>
+        <ns2:taskDefinition type="payment-failure" />
+      </ns0:extensionElements>
+      <ns0:incoming>Flow_0c0suuw</ns0:incoming>
+      <ns0:outgoing>Flow_0fwft3b</ns0:outgoing>
+    </ns0:serviceTask>
+    <ns0:exclusiveGateway id="Gateway_102aa2c">
+      <ns0:incoming>Flow_0fwft3b</ns0:incoming>
+      <ns0:incoming>Flow_0tkk1b3</ns0:incoming>
+      <ns0:outgoing>Flow_0qjjqty</ns0:outgoing>
+    </ns0:exclusiveGateway>
+    <ns0:sequenceFlow id="Flow_0fwft3b" sourceRef="ServiceTask_PaymentFailure" targetRef="Gateway_102aa2c" />
+    <ns0:sequenceFlow id="Flow_0tkk1b3" sourceRef="ServiceTask_PaymentSuccess" targetRef="Gateway_102aa2c" />
+    <ns0:endEvent id="Event_08czccv">
+      <ns0:incoming>Flow_0qjjqty</ns0:incoming>
+    </ns0:endEvent>
+    <ns0:sequenceFlow id="Flow_0qjjqty" sourceRef="Gateway_102aa2c" targetRef="Event_08czccv" />
+    <ns0:userTask id="UserTask_ProvidePayment" name="Provide Payment">
+      <ns0:extensionElements>
+        <ns2:formDefinition formId="form-provide-payment" />
+      </ns0:extensionElements>
+      <ns0:incoming>Flow_0ok4wa1</ns0:incoming>
+      <ns0:incoming>Flow_1301fv8</ns0:incoming>
+      <ns0:outgoing>Flow_16z475e</ns0:outgoing>
+    </ns0:userTask>
+    <ns0:serviceTask id="MessageTask_ProcessPayment" name="Process Payment">
+      <ns0:extensionElements>
+        <ns2:ioMapping>
+          <ns2:input source="=paymentAmount" target="paymentAmount" />
+          <ns2:input source="=totalWithTax" target="totalWithTax" />
+          <ns2:input source="=discount" target="discount" />
+          <ns2:output source="=paymentProcessed" target="paymentProcessed" />
+        </ns2:ioMapping>
+        <ns2:taskDefinition type="process-payment" />
+      </ns0:extensionElements>
+      <ns0:incoming>Flow_16z475e</ns0:incoming>
+      <ns0:outgoing>Flow_0kv1ihn</ns0:outgoing>
+      <ns0:outgoing>Flow_1mv2an1</ns0:outgoing>
+    </ns0:serviceTask>
+    <ns0:sequenceFlow id="Flow_16z475e" sourceRef="UserTask_ProvidePayment" targetRef="MessageTask_ProcessPayment" />
+    <ns0:sequenceFlow id="Flow_0ok4wa1" sourceRef="Gateway_05whmcg" targetRef="UserTask_ProvidePayment" />
+    <ns0:sequenceFlow id="Flow_0kv1ihn" sourceRef="MessageTask_ProcessPayment" targetRef="Gateway_EventBased" />
+    <ns0:intermediateCatchEvent id="CatchEvent_PaymentSuccessful" name="Payment Successful">
+      <ns0:incoming>Flow_0edbcah</ns0:incoming>
+      <ns0:outgoing>Flow_0vz569h</ns0:outgoing>
+      <ns0:signalEventDefinition id="SignalEventDefinition_0ccnzrx" signalRef="Signal_067e69i" />
+    </ns0:intermediateCatchEvent>
+    <ns0:exclusiveGateway id="Gateway_paymentProcessed" name="paymentProcessed?" default="Flow_RetryPayment">
+      <ns0:incoming>Flow_1mv2an1</ns0:incoming>
+      <ns0:outgoing>Flow_paymentProcessed</ns0:outgoing>
+      <ns0:outgoing>Flow_RetryPayment</ns0:outgoing>
+    </ns0:exclusiveGateway>
+    <ns0:sequenceFlow id="Flow_paymentProcessed" name="true" sourceRef="Gateway_paymentProcessed" targetRef="ThrowEvent_PaymentSuccessful">
+      <ns0:conditionExpression xsi:type="bpmn:tFormalExpression">=paymentProcessed</ns0:conditionExpression>
+    </ns0:sequenceFlow>
+    <ns0:intermediateThrowEvent id="ThrowEvent_PaymentSuccessful" name="Payment Successful">
+      <ns0:incoming>Flow_paymentProcessed</ns0:incoming>
+      <ns0:signalEventDefinition id="SignalEventDefinition_0ds2b0w" signalRef="Signal_067e69i" />
+    </ns0:intermediateThrowEvent>
+    <ns0:sequenceFlow id="Flow_RetryPayment" name="false" sourceRef="Gateway_paymentProcessed" targetRef="Event_0qtwipm">
+      <ns0:extensionElements />
+    </ns0:sequenceFlow>
+    <ns0:intermediateThrowEvent id="Event_0qtwipm">
+      <ns0:incoming>Flow_RetryPayment</ns0:incoming>
+      <ns0:linkEventDefinition id="LinkEventDefinition_0vcq177" name="LinkPayment" />
+    </ns0:intermediateThrowEvent>
+    <ns0:intermediateCatchEvent id="Event_0d4h3r8">
+      <ns0:outgoing>Flow_1301fv8</ns0:outgoing>
+      <ns0:linkEventDefinition id="LinkEventDefinition_0r61l6z" name="LinkPayment" />
+    </ns0:intermediateCatchEvent>
+    <ns0:sequenceFlow id="Flow_1301fv8" sourceRef="Event_0d4h3r8" targetRef="UserTask_ProvidePayment" />
+    <ns0:sequenceFlow id="Flow_0edbcah" sourceRef="Gateway_EventBased" targetRef="CatchEvent_PaymentSuccessful" />
+    <ns0:sequenceFlow id="Flow_1mv2an1" sourceRef="MessageTask_ProcessPayment" targetRef="Gateway_paymentProcessed" />
+    <ns0:textAnnotation id="TextAnnotation_0r769qu">
+      <ns0:text>Retry Payment</ns0:text>
+    </ns0:textAnnotation>
+    <ns0:association id="Association_1tca3cy" associationDirection="None" sourceRef="Event_0qtwipm" targetRef="TextAnnotation_0r769qu" />
+  <bpmn:startEvent id="StartEvent_CreateAccount" name="Start Create Account Process" /><bpmn:userTask id="UserTask_InputDetails" name="Input Name, Age" /><bpmn:exclusiveGateway id="ExclusiveGateway_CheckAge" name="Check Age" /><bpmn:userTask id="UserTask_DepositDetails" name="Input Deposit and Years" /><bpmn:serviceTask id="ServiceTask_CalculateInterest" name="Calculate Interest" /><bpmn:userTask id="UserTask_WithdrawAmount" name="Withdraw Amount" /><bpmn:endEvent id="EndEvent_ProcessCompleted" name="Process Completed" /></ns0:process>
+  <ns0:message id="Message_0o4n57k" name="Message_PaymentSuccessful">
+    <ns0:extensionElements />
+  </ns0:message>
+  <ns0:signal id="Signal_067e69i" name="paymentProcessed" />
+  <ns0:message id="Message_1lec0vq" name="Message_1lec0vq" />
+  <ns0:signal id="Signal_1hsf8t4" name="Signal_1hsf8t4" />
+  <ns4:BPMNDiagram id="BPMNDiagram_1">
+    <ns4:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_1puurly">
+      <ns4:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <ns5:Bounds x="152" y="342" width="36" height="36" />
+      </ns4:BPMNShape>
+      <ns4:BPMNShape id="Activity_0s6bmzs_di" bpmnElement="UserTask_InputTotal">
+        <ns5:Bounds x="280" y="320" width="100" height="80" />
+        <ns4:BPMNLabel />
+      </ns4:BPMNShape>
+      <ns4:BPMNShape id="Activity_1iu7aay_di" bpmnElement="ServiceTask_CalculateTax">
+        <ns5:Bounds x="450" y="320" width="100" height="80" />
+        <ns4:BPMNLabel />
+      </ns4:BPMNShape>
+      <ns4:BPMNShape id="Gateway_1wloe6n_di" bpmnElement="Gateway_0d9x8xs">
+        <ns5:Bounds x="625" y="335" width="50" height="50" />
+      </ns4:BPMNShape>
+      <ns4:BPMNShape id="Activity_1wwdqlu_di" bpmnElement="ServiceTask_NotifyUser">
+        <ns5:Bounds x="720" y="230" width="100" height="80" />
+        <ns4:BPMNLabel />
+      </ns4:BPMNShape>
+      <ns4:BPMNShape id="Activity_14cqi9e_di" bpmnElement="ServiceTask_CheckDiscounts">
+        <ns5:Bounds x="720" y="410" width="100" height="80" />
+        <ns4:BPMNLabel />
+      </ns4:BPMNShape>
+      <ns4:BPMNShape id="Gateway_0909kgx_di" bpmnElement="Gateway_05whmcg">
+        <ns5:Bounds x="865" y="335" width="50" height="50" />
+      </ns4:BPMNShape>
+      <ns4:BPMNShape id="Gateway_1ayy5qh_di" bpmnElement="Gateway_EventBased">
+        <ns5:Bounds x="1365" y="335" width="50" height="50" />
+      </ns4:BPMNShape>
+      <ns4:BPMNShape id="Event_0wt67ws_di" bpmnElement="CatchEvent_PaymentTimeout">
+        <ns5:Bounds x="1472" y="412" width="36" height="36" />
+        <ns4:BPMNLabel>
+          <ns5:Bounds x="1448" y="455" width="87" height="14" />
+        </ns4:BPMNLabel>
+      </ns4:BPMNShape>
+      <ns4:BPMNShape id="Activity_1tnmi5h_di" bpmnElement="ServiceTask_PaymentSuccess">
+        <ns5:Bounds x="1570" y="250" width="100" height="80" />
+        <ns4:BPMNLabel />
+      </ns4:BPMNShape>
+      <ns4:BPMNShape id="Activity_0bkby8v_di" bpmnElement="ServiceTask_PaymentFailure">
+        <ns5:Bounds x="1570" y="390" width="100" height="80" />
+        <ns4:BPMNLabel />
+      </ns4:BPMNShape>
+      <ns4:BPMNShape id="Gateway_102aa2c_di" bpmnElement="Gateway_102aa2c" isMarkerVisible="true">
+        <ns5:Bounds x="1735" y="335" width="50" height="50" />
+      </ns4:BPMNShape>
+      <ns4:BPMNShape id="Event_08czccv_di" bpmnElement="Event_08czccv">
+        <ns5:Bounds x="1852" y="342" width="36" height="36" />
+      </ns4:BPMNShape>
+      <ns4:BPMNShape id="Activity_1y6112x_di" bpmnElement="UserTask_ProvidePayment">
+        <ns5:Bounds x="1010" y="320" width="100" height="80" />
+      </ns4:BPMNShape>
+      <ns4:BPMNShape id="Activity_1k8wx9o_di" bpmnElement="MessageTask_ProcessPayment">
+        <ns5:Bounds x="1200" y="320" width="100" height="80" />
+      </ns4:BPMNShape>
+      <ns4:BPMNShape id="Event_1lmdhvs_di" bpmnElement="CatchEvent_PaymentSuccessful">
+        <ns5:Bounds x="1472" y="272" width="36" height="36" />
+        <ns4:BPMNLabel>
+          <ns5:Bounds x="1463" y="315" width="54" height="27" />
+        </ns4:BPMNLabel>
+      </ns4:BPMNShape>
+      <ns4:BPMNShape id="Gateway_1t40n5x_di" bpmnElement="Gateway_paymentProcessed" isMarkerVisible="true">
+        <ns5:Bounds x="1225" y="195" width="50" height="50" />
+        <ns4:BPMNLabel>
+          <ns5:Bounds x="1158" y="186" width="83" height="27" />
+        </ns4:BPMNLabel>
+      </ns4:BPMNShape>
+      <ns4:BPMNShape id="Event_1fxtn3n_di" bpmnElement="ThrowEvent_PaymentSuccessful">
+        <ns5:Bounds x="1352" y="202" width="36" height="36" />
+        <ns4:BPMNLabel>
+          <ns5:Bounds x="1343" y="164.5" width="54" height="27" />
+        </ns4:BPMNLabel>
+      </ns4:BPMNShape>
+      <ns4:BPMNShape id="Event_1ipg7el_di" bpmnElement="Event_0qtwipm">
+        <ns5:Bounds x="1352" y="92" width="36" height="36" />
+      </ns4:BPMNShape>
+      <ns4:BPMNShape id="Event_0s8iocm_di" bpmnElement="Event_0d4h3r8">
+        <ns5:Bounds x="982" y="222" width="36" height="36" />
+      </ns4:BPMNShape>
+      <ns4:BPMNShape id="TextAnnotation_0r769qu_di" bpmnElement="TextAnnotation_0r769qu">
+        <ns5:Bounds x="1410" y="70" width="99.99999880417013" height="29.996082700532057" />
+        <ns4:BPMNLabel />
+      </ns4:BPMNShape>
+      <ns4:BPMNEdge id="Flow_0s97u3o_di" bpmnElement="Flow_0s97u3o">
+        <ns6:waypoint x="188" y="360" />
+        <ns6:waypoint x="280" y="360" />
+      </ns4:BPMNEdge>
+      <ns4:BPMNEdge id="Flow_0hd0b83_di" bpmnElement="Flow_0hd0b83">
+        <ns6:waypoint x="380" y="360" />
+        <ns6:waypoint x="450" y="360" />
+      </ns4:BPMNEdge>
+      <ns4:BPMNEdge id="Flow_0jwhnof_di" bpmnElement="Flow_0jwhnof">
+        <ns6:waypoint x="550" y="360" />
+        <ns6:waypoint x="625" y="360" />
+      </ns4:BPMNEdge>
+      <ns4:BPMNEdge id="Flow_1awff7q_di" bpmnElement="Flow_1awff7q">
+        <ns6:waypoint x="650" y="335" />
+        <ns6:waypoint x="650" y="270" />
+        <ns6:waypoint x="720" y="270" />
+      </ns4:BPMNEdge>
+      <ns4:BPMNEdge id="Flow_15h0o1n_di" bpmnElement="Flow_15h0o1n">
+        <ns6:waypoint x="650" y="385" />
+        <ns6:waypoint x="650" y="450" />
+        <ns6:waypoint x="720" y="450" />
+      </ns4:BPMNEdge>
+      <ns4:BPMNEdge id="Flow_0161e1j_di" bpmnElement="Flow_0161e1j">
+        <ns6:waypoint x="820" y="450" />
+        <ns6:waypoint x="890" y="450" />
+        <ns6:waypoint x="890" y="385" />
+      </ns4:BPMNEdge>
+      <ns4:BPMNEdge id="Flow_1h61yzf_di" bpmnElement="Flow_1h61yzf">
+        <ns6:waypoint x="820" y="270" />
+        <ns6:waypoint x="890" y="270" />
+        <ns6:waypoint x="890" y="335" />
+      </ns4:BPMNEdge>
+      <ns4:BPMNEdge id="Flow_13s2exa_di" bpmnElement="Flow_13s2exa">
+        <ns6:waypoint x="1390" y="385" />
+        <ns6:waypoint x="1390" y="430" />
+        <ns6:waypoint x="1472" y="430" />
+      </ns4:BPMNEdge>
+      <ns4:BPMNEdge id="Flow_0vz569h_di" bpmnElement="Flow_0vz569h">
+        <ns6:waypoint x="1508" y="290" />
+        <ns6:waypoint x="1570" y="290" />
+      </ns4:BPMNEdge>
+      <ns4:BPMNEdge id="Flow_0c0suuw_di" bpmnElement="Flow_0c0suuw">
+        <ns6:waypoint x="1508" y="430" />
+        <ns6:waypoint x="1570" y="430" />
+      </ns4:BPMNEdge>
+      <ns4:BPMNEdge id="Flow_0fwft3b_di" bpmnElement="Flow_0fwft3b">
+        <ns6:waypoint x="1670" y="430" />
+        <ns6:waypoint x="1760" y="430" />
+        <ns6:waypoint x="1760" y="385" />
+      </ns4:BPMNEdge>
+      <ns4:BPMNEdge id="Flow_0tkk1b3_di" bpmnElement="Flow_0tkk1b3">
+        <ns6:waypoint x="1670" y="290" />
+        <ns6:waypoint x="1760" y="290" />
+        <ns6:waypoint x="1760" y="335" />
+      </ns4:BPMNEdge>
+      <ns4:BPMNEdge id="Flow_0qjjqty_di" bpmnElement="Flow_0qjjqty">
+        <ns6:waypoint x="1785" y="360" />
+        <ns6:waypoint x="1852" y="360" />
+      </ns4:BPMNEdge>
+      <ns4:BPMNEdge id="Flow_16z475e_di" bpmnElement="Flow_16z475e">
+        <ns6:waypoint x="1110" y="360" />
+        <ns6:waypoint x="1200" y="360" />
+      </ns4:BPMNEdge>
+      <ns4:BPMNEdge id="Flow_0ok4wa1_di" bpmnElement="Flow_0ok4wa1">
+        <ns6:waypoint x="915" y="360" />
+        <ns6:waypoint x="1010" y="360" />
+      </ns4:BPMNEdge>
+      <ns4:BPMNEdge id="Flow_0kv1ihn_di" bpmnElement="Flow_0kv1ihn">
+        <ns6:waypoint x="1300" y="360" />
+        <ns6:waypoint x="1365" y="360" />
+      </ns4:BPMNEdge>
+      <ns4:BPMNEdge id="Flow_0c0be75_di" bpmnElement="Flow_paymentProcessed">
+        <ns6:waypoint x="1275" y="220" />
+        <ns6:waypoint x="1352" y="220" />
+        <ns4:BPMNLabel>
+          <ns5:Bounds x="1275" y="224" width="19" height="14" />
+        </ns4:BPMNLabel>
+      </ns4:BPMNEdge>
+      <ns4:BPMNEdge id="Flow_1fzv4q0_di" bpmnElement="Flow_RetryPayment">
+        <ns6:waypoint x="1250" y="195" />
+        <ns6:waypoint x="1250" y="110" />
+        <ns6:waypoint x="1352" y="110" />
+        <ns4:BPMNLabel>
+          <ns5:Bounds x="1275" y="93" width="23" height="14" />
+        </ns4:BPMNLabel>
+      </ns4:BPMNEdge>
+      <ns4:BPMNEdge id="Flow_1301fv8_di" bpmnElement="Flow_1301fv8">
+        <ns6:waypoint x="1018" y="240" />
+        <ns6:waypoint x="1060" y="240" />
+        <ns6:waypoint x="1060" y="320" />
+      </ns4:BPMNEdge>
+      <ns4:BPMNEdge id="Flow_0edbcah_di" bpmnElement="Flow_0edbcah">
+        <ns6:waypoint x="1390" y="335" />
+        <ns6:waypoint x="1390" y="290" />
+        <ns6:waypoint x="1472" y="290" />
+      </ns4:BPMNEdge>
+      <ns4:BPMNEdge id="Flow_1mv2an1_di" bpmnElement="Flow_1mv2an1">
+        <ns6:waypoint x="1250" y="320" />
+        <ns6:waypoint x="1250" y="245" />
+      </ns4:BPMNEdge>
+      <ns4:BPMNEdge id="Association_1tca3cy_di" bpmnElement="Association_1tca3cy">
+        <ns6:waypoint x="1387" y="105" />
+        <ns6:waypoint x="1410" y="99" />
+      </ns4:BPMNEdge>
+    </ns4:BPMNPlane>
+  </ns4:BPMNDiagram>
+</ns0:definitions>
