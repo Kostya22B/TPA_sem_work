@@ -2,6 +2,7 @@ package com.example.demo;
 
 import io.camunda.zeebe.spring.client.annotation.JobWorker;
 import io.camunda.zeebe.spring.client.annotation.Variable;
+import io.camunda.zeebe.spring.common.exception.ZeebeBpmnError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -12,20 +13,16 @@ import java.util.Map;
 public class ChargeCreditCardWorker {
 
     private final static Logger LOG = LoggerFactory.getLogger(ChargeCreditCardWorker.class);
-
-//    @JobWorker(type = "charge-credit-card")
-//    public Map<String, Double> chargeCreditCard(@Variable(name = "total") Double total) {
-//        //20% surcharge for credit card payment
-//        double amountCharged = total * 1.2;
-//        LOG.info("charging credit card (including surcharge): {}", String.format("%,.2f", amountCharged));
-//        return Map.of("amountCharged", amountCharged);
-//    }
     @JobWorker(type = "validate_age")
     public Map<String, Object> validateAge(@Variable(name = "userAge") Integer userAge) {
         LOG.info("Validating age: {}", userAge);
 
         boolean isAgeValid = userAge != null && userAge >= 18;
-
+        if(!isAgeValid) {
+            throw new ZeebeBpmnError("Invalid user",
+                    "Age must be greater than 18 or equal to it",
+                    null);
+        }
         LOG.info("Age validation result: {}", isAgeValid);
         return Map.of("validatedAge", isAgeValid);
     }
@@ -51,5 +48,24 @@ public class ChargeCreditCardWorker {
 
         return Map.of("simpleInterestResult", simpleInterestResult);
     }
+    @JobWorker(type = "validate_deposit")
+    public Map<String, Object> validateDeposit(
+            @Variable(name = "depositAmount") Double depositAmount,
+            @Variable(name = "depositYears") Double depositYears
+            ) {
+        if (depositAmount == null || depositAmount <= 0) {
+            throw new ZeebeBpmnError("InvalidDeposit",
+                    "Deposit amount must be greater than 0",
+                    null);
+        }
+        if (depositYears > 3 ||  depositYears < 15) {
+            throw new ZeebeBpmnError("InvalidDeposit",
+                    "Deposit years must be more than 3 and less than 15",
+                    null);
+        }
+        System.out.println("Amount " + depositAmount + "Years " + depositYears);
+        return Map.of("isDepositValid", true);
+    }
+
 
 }

@@ -12,7 +12,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import java.util.Map;
 
 @SpringBootApplication
-@Deployment(resources = "classpath:bondakos_domashka.bpmn")
+@Deployment(resources = "classpath:Investment_system_bondakos.bpmn")
 public class DemoApplication implements CommandLineRunner {
 
 	private static final Logger LOG = LoggerFactory.getLogger(DemoApplication.class);
@@ -26,7 +26,7 @@ public class DemoApplication implements CommandLineRunner {
 
 	@Override
 	public void run ( final String...args){
-		var bpmnProcessId = "Process_1yuyqdx";
+		var bpmnProcessId = "Investment_system_bondakos";
 		try {
 
 			var event = zeebeClient.newCreateInstanceCommand()
