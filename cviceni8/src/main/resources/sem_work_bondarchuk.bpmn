@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Web Modeler" exporterVersion="14b513a" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.6.0">
+  <bpmn:collaboration id="Collaboration_0ifb5c1">
+    <bpmn:participant id="sem_work_bondakos" name="Translate" processRef="translator_bondakos" />
+  </bpmn:collaboration>
+  <bpmn:process id="translator_bondakos" name="sem_work_bondarchuk" isExecutable="true">
+    <bpmn:laneSet id="LaneSet_0bqjayz">
+      <bpmn:lane id="Lane_1unsklf" name="Translator" />
+      <bpmn:lane id="Lane_0axw5qe" name="System" />
+      <bpmn:lane id="Lane_1n0j2ba" name="User">
+        <bpmn:flowNodeRef>StartEvent_1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>bondakos_user_input_text</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="StartEvent_1">
+      <bpmn:outgoing>Flow_1g3y5ty</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:userTask id="bondakos_user_input_text" name="User insert text">
+      <bpmn:extensionElements>
+        <zeebe:userTask />
+        <zeebe:ioMapping>
+          <zeebe:input target="InputVariable_0jo7k3g" />
+        </zeebe:ioMapping>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1g3y5ty</bpmn:incoming>
+    </bpmn:userTask>
+    <bpmn:sequenceFlow id="Flow_1g3y5ty" sourceRef="StartEvent_1" targetRef="bondakos_user_input_text" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_0ifb5c1">
+      <bpmndi:BPMNShape id="Participant_06qxbb2_di" bpmnElement="sem_work_bondakos" isHorizontal="true">
+        <dc:Bounds x="160" y="80" width="1380" height="490" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_1unsklf_di" bpmnElement="Lane_1unsklf" isHorizontal="true">
+        <dc:Bounds x="190" y="450" width="1350" height="120" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_0axw5qe_di" bpmnElement="Lane_0axw5qe" isHorizontal="true">
+        <dc:Bounds x="190" y="330" width="1350" height="120" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_1n0j2ba_di" bpmnElement="Lane_1n0j2ba" isHorizontal="true">
+        <dc:Bounds x="190" y="80" width="1350" height="250" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="292" y="112" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0tyd2p1_di" bpmnElement="bondakos_user_input_text">
+        <dc:Bounds x="370" y="90" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1g3y5ty_di" bpmnElement="Flow_1g3y5ty">
+        <di:waypoint x="328" y="130" />
+        <di:waypoint x="370" y="130" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
