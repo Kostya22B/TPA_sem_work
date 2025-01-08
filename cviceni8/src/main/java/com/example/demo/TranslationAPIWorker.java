@@ -46,7 +46,7 @@ public class TranslationAPIWorker {
 
         } catch (DeepLException | InterruptedException e) {
             e.printStackTrace();
-            throw new ZeebeBpmnError("TRANSLATION_FAILED", "Failed to translate by DeepL", null);
+            throw new ZeebeBpmnError("API_ERROR_DEEPL", "Failed to translate by DeepL", null);
         }
     }
 

@@ -21,7 +21,11 @@ public class EmailSenderWorker {
     @JobWorker(type = "Send_text_to_user")
     public void sendEmail(
             @Variable(name = "userEmail") String recipientEmail,
-            @Variable(name = "translatedText") String translatedText) {
+            @Variable(name = "translatedText") String translatedText,
+            @Variable(name = "translationText") String translationText,
+            @Variable(name = "translationLanguageInput") String sourceLanguage,
+            @Variable(name = "translationLanguageOutput") String targetLanguage,
+            @Variable(name = "translationFormality") String translationFormality) {
 
         try {
             Email from = new Email("bondakos@cvut.cz");
@@ -30,12 +34,21 @@ public class EmailSenderWorker {
 
             // HTML-контент письма
             String htmlContent = "<html>" +
-                    "<body>" +
-                    "<h2>Your text was succesfully translated</h2>" +
-                    "<p><strong>Your translation result:</strong></p>" +
+                    "<body style='font-family: Arial, sans-serif; line-height: 1.6;'>" +
+                    "<h2 style='color: #4CAF50;'>Your text was successfully translated!</h2>" +
+                    "<p><strong>Original Text:</strong></p>" +
+                    "<p style='background-color: #f9f9f9; padding: 10px; border-radius: 5px;'>" + translationText + "</p>" +
+                    "<p><strong>Translated Text:</strong></p>" +
                     "<p style='background-color: #f4f4f4; padding: 10px; border-radius: 5px;'>" + translatedText + "</p>" +
                     "<hr>" +
-                    "<p>Sincerely,<br>Team Bondakos Translate</p>" +
+                    "<h3 style='color: #2196F3;'>Translation Details</h3>" +
+                    "<ul>" +
+                    "<li><strong>Source Language:</strong> " + sourceLanguage + "</li>" +
+                    "<li><strong>Target Language:</strong> " + targetLanguage + "</li>" +
+                    "<li><strong>Formality:</strong> " + translationFormality + "</li>" +
+                    "</ul>" +
+                    "<hr>" +
+                    "<p>Thank you for using Bondakos Translate!<br>Sincerely,<br>Team Bondakos Translate</p>" +
                     "</body>" +
                     "</html>";
 

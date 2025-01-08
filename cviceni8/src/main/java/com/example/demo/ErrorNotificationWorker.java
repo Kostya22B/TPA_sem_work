@@ -34,7 +34,7 @@ public class ErrorNotificationWorker {
                     "<h2>We encountered an error with your translation request</h2>" +
                     "<p><strong>Error Details:</strong></p>" +
                     "<p style='color: red;'>" +
-                    "You choose 2 same languages. Try again or didnt insert text at all" +validationErrorText + "</p>" +
+                    validationErrorText + "</p>" +
                     "<hr>" +
                     "<p>Please correct the errors and try again.<br>Sincerely,<br>Team Bondakos Translate</p>" +
                     "</body>" +

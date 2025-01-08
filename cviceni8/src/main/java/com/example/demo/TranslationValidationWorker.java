@@ -28,39 +28,33 @@ public class TranslationValidationWorker {
         variables.put("isValidRequest", true);
         String validationErrorText = "";
 
-        if (text == null || text.isEmpty()) {
-            validationErrorText = "Validation failed: Text is null or empty.";
-            LOG.error(validationErrorText);
-            variables.put("errorMessage", validationErrorText);
-            throw new ZeebeBpmnError("NULL_VALIDATION_ERROR", "The translation text cannot be null or empty.", null);
-        }
 
         if (text.length() > 5000) {
             validationErrorText = "Validation failed: Text length exceeds 5000 characters.";
             LOG.error(validationErrorText);
-            variables.put("errorMessage", validationErrorText);
-            throw new ZeebeBpmnError("TEXT_LENGTH_ERROR", "The translation text exceeds the maximum length of 5000 characters.", null);
-        }
+            variables.put("validationErrorText", validationErrorText);
+            variables.put("isValidRequest", false);
+            }
 
-        if (sourceLanguage == null || targetLanguage == null || text == null || text.isEmpty()) {
+        else if (sourceLanguage == null || targetLanguage == null || text == null || text.isEmpty()) {
             validationErrorText = "Validation failed: Text, Target or Source language is null.";
             LOG.error(validationErrorText);
-            variables.put("errorMessage", validationErrorText);
-            throw new ZeebeBpmnError("NULL_VALIDATION_ERROR", "The source language must be specified.", null);
-        }
+            variables.put("validationErrorText", validationErrorText);
+            variables.put("isValidRequest", false);
+            }
 
-        if (sourceLanguage.equalsIgnoreCase(targetLanguage)) {
+        else if (sourceLanguage.equalsIgnoreCase(targetLanguage)) {
             validationErrorText = "Validation failed: Source and target languages are the same.";
             LOG.error(validationErrorText);
-            variables.put("errorMessage", validationErrorText);
-            throw new ZeebeBpmnError("USER_VALIDATION_ERROR", "Source and target languages cannot be the same.", null);
-        }
+            variables.put("validationErrorText", validationErrorText);
+            variables.put("isValidRequest", false);
+            }
 
-        if (sourceLanguage.equalsIgnoreCase("EN") && targetLanguage.equalsIgnoreCase("en-US")) {
+        else if (sourceLanguage.equalsIgnoreCase("EN") && targetLanguage.equalsIgnoreCase("en-US")) {
             validationErrorText = "Validation failed: Source language is EN and target language is en-US.";
             LOG.error(validationErrorText);
-            variables.put("errorMessage", validationErrorText);
-            throw new ZeebeBpmnError("USER_VALIDATION_ERROR", "Source language cannot be EN when target language is en-US.", null);
+            variables.put("validationErrorText", validationErrorText);
+            variables.put("isValidRequest", false);
         }
 
         // Все проверки пройдены
@@ -68,4 +62,4 @@ public class TranslationValidationWorker {
 
         return variables;
     }
-    }
+}
