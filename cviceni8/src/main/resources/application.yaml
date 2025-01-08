@@ -9,3 +9,13 @@ camunda:
       client-secret: 9T6vgE_MUmzDUci1NB9H_2gygNmTghqr_4_Rs9Hr7KnLbJN0W4M4JA5-HqweA-WG
     cluster-id: 4ce36d31-05b5-4b51-8d71-94f05f8a26b6
     region: bru-2
+spring:
+  datasource:
+    url: jdbc:postgresql://tpa-db-toad.h.aivencloud.com:10177/defaultdb?ssl=require
+    username: avnadmin
+    password: AVNS_8KYaKJsPqKugS4kUxnk
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true

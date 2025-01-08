@@ -32,7 +32,7 @@ public class DemoApplication implements CommandLineRunner {
 			var event = zeebeClient.newCreateInstanceCommand()
 					.bpmnProcessId(bpmnProcessId)
 					.latestVersion()
-					.variables(Map.of("total", 100))
+					.variables(Map.of("validationErrorText", ""))
 					.send()
 					.join();
 			LOG.info(String.format("started a process: %d", event.getProcessInstanceKey()));
